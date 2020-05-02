@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>VoiceApp</title>
+    </head>
+<body>
+    <div style="text-align: center;">
+        <p>
+            This voice application is created to call peoples without anyone seeing it. <br>
+            It would be covered by 'HTTPS' - but i'm not sure about it. The adcvanced tech ppl <br/>
+            like gouverments will be able to listen in if the feel like it. <br/> <br/>
+            This voice app is not for secret use, and we as developer are not responsible <br/>
+            for any bad uses of this app.
+        </p>
+        <script src="https://unpkg.com/peerjs@1.0.0/dist/peerjs.min.js"></script>
+        <input type="text" id="calling"></input>
+        <input type="button" onclick="call()" value="call"></input>
+        <input type="button" onclick="answer()" value="answer"></input>
+        <br/>
+        <br/>
+        <audio controls></audio>
+        <p>----------------------------- </p>
+        <p>Peer ID:</p>
+        <p>----------------------------- </p>
+        <div id="peerid"></div>
+        <p>
+            ----------------------------- <br/> 
+            To Generate an 'Peer ID' you need to click on <br/>
+            the 'answer' button. <br/> <br/>
+            (If an id don't show up,  spam press the answer-button <br/>
+            or just refresh page with F5 or icon)
+        </p>
+    
+        <script>
+            // Getting user data/media
+            var getUserMedia = (function () {
+                if(navigator.getUserMedia) {
+                    return navigator.getUserMedia.bind(navigator)
+                }
+                if(navigator.webkitGetUserMedia) {
+                    return navigator.webkitGetUserMedia.bind(navigator)
+                }
+                if(navigator.mozGetUserMedia) {
+                    return navigator.mozGetUserMedia.bind(navigator)
+                }
+            })();
+    
+            // Reciving calls from other users
+            function onReciveStream(stream){
+                var audio = document.querySelector('audio');
+                audio.src = window.URL.createObjectURL(stream);
+                audio.onloadeddata = function(e){
+                    console.log('Palying audio');
+                    audio.play();
+                }
+            }
+    
+            // Calling a user
+            function call(){
+                var person_to_call = document.getElementById('calling').value;
+                console.log('Calling' + person_to_call);
+    
+                var peer = new Peer();
+                getUserMedia({video: false, audio: true}, function(stream){
+                    var call = peer.call(person_to_call, stream);
+                    call.on('stream', function(remoteStream){
+                        console.log(remoteStream);
+                        onReciveStream(remoteStream);
+                    });
+                }, function(err){
+                    console.log('Failed to get local stream');
+                });
+            }
+    
+            // answering a call
+            function answer(){
+               var peer = new Peer();
+                peer.on('open', (id) => {
+                    document.getElementById('peerid').innerHTML = id;
+                });
+    
+                peer.on('call', function(call){
+                        getUserMedia({video: false, audio: true}, function(stream){
+                        console.log('You are getting a call');
+                        //Answer call with an A/V stream
+                        call.answer(stream);
+                        call.on('stream', function(remoteStream){
+                            console.log(remoteStream);
+                            onReciveStream(remoteStream);
+                        });
+                    }, function(err){
+                        console.log('Failed to get local stream');
+                    });
+                });
+                
+            }
+        </script>
+    
+        <p>
+            <br/> 
+            We will begin and AI for improve the app... <br/>
+            We will notify users when the AI is implemented...
+        </p>
+    </div>
+</body>
+</html>
