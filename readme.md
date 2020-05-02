@@ -1,11 +1,6 @@
-# GIT through terminal
+# VoiceApp
 
----
+Voice App is a simple application builöd with HTML and peer-to-peer js.
 
-### will it work?
-
----
-
-### Commit all files?
-- How to do it?
-    
+## P2P JS
+- Read more: https://peerjs.com/
